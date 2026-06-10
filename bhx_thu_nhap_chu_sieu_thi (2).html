@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Thu Nhập Chủ Siêu Thị — Bách Hóa Xanh</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  :root {
+    --green-900: #0f3d1f;
+    --green-800: #1a5c2e;
+    --green-700: #206b35;
+    --green-600: #2d8a4e;
+    --green-100: #e1f5ee;
+    --green-50:  #f0faf5;
+    --amber-bg:  #faeeda;
+    --amber-txt: #854f0b;
+    --red-bg:    #fcebeb;
+    --red-txt:   #a32d2d;
+    --gray-900:  #1a1a1a;
+    --gray-700:  #374151;
+    --gray-500:  #6b7280;
+    --gray-300:  #d1d5db;
+    --gray-100:  #f3f4f6;
+    --gray-50:   #f9fafb;
+    --white:     #ffffff;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html { font-size: 16px; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--gray-50);
+    color: var(--gray-900);
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* ── Top bar ── */
+  .topbar {
+    background: var(--green-800);
+    color: #fff;
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-md);
+  }
+  .topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: -0.2px;
+  }
+  .topbar-logo {
+    width: 32px; height: 32px;
+    background: #fff;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .topbar-sub { font-size: 11px; opacity: 0.75; font-weight: 400; display: block; margin-top: 1px; }
+
+  /* ── Layout ── */
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+
+  /* ── Tabs ── */
+  .tabs {
+    display: flex;
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 4px;
+    gap: 4px;
+    margin-bottom: 1.25rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-300);
+  }
+  .tab {
+    flex: 1;
+    padding: 9px 6px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: var(--gray-500);
+    transition: all 0.15s;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    border: none;
+    background: none;
+  }
+  .tab svg { width: 15px; height: 15px; flex-shrink: 0; }
+  .tab.active {
+    background: var(--green-800);
+    color: #fff;
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* ── Cards / sections ── */
+  .card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-300);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow-sm);
+  }
+  .card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title svg { color: var(--green-800); flex-shrink: 0; }
+
+  /* ── Form ── */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full { grid-column: 1 / -1; }
+  label { font-size: 12px; font-weight: 600; color: var(--gray-700); letter-spacing: 0.2px; }
+
+  input[type="text"],
+  input[type="number"],
+  input[type="password"],
+  select {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 14px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: var(--radius-sm);
+    background: var(--white);
+    color: var(--gray-900);
+    outline: none;
+    transition: all 0.2s ease;
+    -webkit-appearance: none;
+    appearance: none;
+    font-family: inherit;
+  }
+  input:focus, select:focus { border-color: var(--green-700); box-shadow: 0 0 0 3px var(--green-100); }
+  
+  /* Select icon styling */
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
+
+  /* Enhanced Search Input */
+  .search-input-wrapper input {
+    padding: 12px 14px 12px 36px; /* Padding for search icon */
+    font-size: 15px;
+    border-width: 2px;
+  }
+  .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray-500);
+    pointer-events: none;
+  }
+
+  /* Money input */
+  .money-wrap { position: relative; }
+  .money-wrap input { padding-right: 80px; }
+  .money-hint {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 11px;
+    color: var(--green-700);
+    font-weight: 500;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  /* ── Buttons ── */
+  .btn-primary {
+    background: var(--green-800);
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 4px;
+    transition: background 0.15s;
+    font-family: inherit;
+  }
+  .btn-primary:hover { background: var(--green-900); }
+  .btn-primary:active { transform: scale(0.99); }
+
+  .btn-outline {
+    background: var(--white);
+    color: var(--green-800);
+    border: 1.5px solid var(--green-800);
+    padding: 9px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: inherit;
+  }
+  .btn-outline:hover { background: var(--green-50); }
+
+  .btn-ghost {
+    background: none;
+    color: var(--red-txt);
+    border: 1px solid #f7c1c1;
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  /* ── Result box ── */
+  .result-box {
+    background: var(--white);
+    border: 2px solid var(--green-800);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-top: 1rem;
+    box-shadow: 0 4px 20px rgba(26,92,46,0.12);
+  }
+  .result-label { font-size: 12px; color: var(--gray-500); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .result-total { font-size: 36px; font-weight: 700; color: var(--green-800); letter-spacing: -1px; line-height: 1.1; }
+
+  .result-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 1rem;
+  }
+  .result-card {
+    background: var(--gray-50);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    border: 1px solid var(--gray-300);
+  }
+  .result-card-lbl { font-size: 10px; color: var(--gray-500); margin-bottom: 3px; font-weight: 500; line-height: 1.3; }
+  .result-card-val { font-size: 13px; font-weight: 600; color: var(--gray-900); }
+
+  /* ── Breakdown rows ── */
+  .breakdown { margin-top: 1rem; border-top: 1px solid var(--gray-100); padding-top: 1rem; }
+  .breakdown-title { font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .brow {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--gray-100);
+    font-size: 13px;
+    gap: 8px;
+  }
+  .brow:last-child { border-bottom: none; font-weight: 600; font-size: 14px; }
+  .brow-lbl { color: var(--gray-700); flex: 1; }
+  .brow-val { font-weight: 500; white-space: nowrap; color: var(--gray-900); }
+  .brow-val.green { color: var(--green-700); }
+  .brow-val.red { color: var(--red-txt); }
+
+  /* ── Badge ── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 100px;
+    margin-top: 6px;
+  }
+  .badge-green { background: var(--green-100); color: var(--green-800); }
+  .badge-amber { background: var(--amber-bg); color: var(--amber-txt); }
+  .badge-red   { background: var(--red-bg); color: var(--red-txt); }
+
+  /* ── Notice boxes ── */
+  .notice {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    margin-top: 8px;
+  }
+  .notice svg { flex-shrink: 0; margin-top: 1px; }
+  .notice-amber { background: var(--amber-bg); color: var(--amber-txt); }
+  .notice-green { background: var(--green-100); color: var(--green-800); border-left: 3px solid var(--green-700); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+  .notice-gray  { background: var(--gray-100); color: var(--gray-700); border-left: 3px solid var(--gray-300); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+
+  /* ── Lock screen ── */
+  .lock-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+    gap: 16px;
+    text-align: center;
+  }
+  .lock-icon {
+    width: 72px; height: 72px;
+    background: var(--green-100);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .lock-icon svg { color: var(--green-800); }
+  .lock-title { font-size: 17px; font-weight: 600; color: var(--gray-900); }
+  .lock-sub { font-size: 13px; color: var(--gray-500); }
+  .lock-screen input { max-width: 260px; text-align: center; letter-spacing: 4px; font-size: 20px; }
+  .lock-screen .btn-primary { max-width: 260px; }
+  .lock-err { font-size: 13px; color: var(--red-txt); min-height: 18px; }
+
+  /* ── Import table ── */
+  .tbl-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    background: var(--gray-50);
+    padding: 9px 10px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 11px;
+    color: var(--gray-500);
+    border-bottom: 1px solid var(--gray-300);
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  td { padding: 9px 10px; border-bottom: 1px solid var(--gray-100); color: var(--gray-700); }
+  tr:hover td { background: var(--gray-50); }
+  tr:last-child td { border-bottom: none; }
+
+  /* ── Upload area ── */
+  .upload-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: var(--radius-md);
+    padding: 2rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .upload-area:hover { border-color: var(--green-700); background: var(--green-50); }
+  .upload-area-icon { font-size: 36px; margin-bottom: 8px; }
+  .upload-area p { font-size: 13px; color: var(--gray-500); }
+  .upload-area strong { color: var(--green-800); }
+
+  /* ── Formula box ── */
+  .formula {
+    background: var(--green-50);
+    border: 1px solid var(--green-100);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: var(--green-800);
+    margin-top: 8px;
+    line-height: 1.7;
+  }
+
+  /* ── Base info block ── */
+  .base-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 0;
+  }
+  .base-info-item { }
+  .base-info-lbl { font-size: 11px; color: var(--gray-500); font-weight: 500; margin-bottom: 2px; }
+  .base-info-val { font-size: 14px; font-weight: 600; color: var(--gray-900); }
+  .base-info-val.accent { color: var(--green-800); }
+
+  /* ── Section headers in guide ── */
+  .guide-rule {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--gray-100);
+    font-size: 13px;
+    color: var(--gray-700);
+  }
+  .guide-rule:last-child { border-bottom: none; }
+  .guide-rule span:last-child { font-weight: 600; color: var(--gray-900); }
+
+  /* ── Responsive ── */
+  @media (max-width: 480px) {
+    .result-total { font-size: 28px; }
+    .result-grid { grid-template-columns: 1fr 1fr; }
+    .result-grid .result-card:last-child { grid-column: 1 / -1; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-group.full { grid-column: 1; }
+    .tab span { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-brand">
+    <div class="topbar-logo">🛒</div>
+    <div>
+      Thu Nhập Chủ Siêu Thị
+      <span class="topbar-sub">Bách Hóa Xanh — Chính sách 2026</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="tabs" role="tablist">
+    <button class="tab active" onclick="switchTab('calc')" id="tab-calc" role="tab">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg>
+      <span>Tính thu nhập</span>
+    </button>
+    <button class="tab" onclick="switchTab('base')" id="tab-base" role="tab">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg>
+      <span>Quản lý Base</span>
+    </button>
+    <button class="tab" onclick="switchTab('guide')" id="tab-guide" role="tab">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+      <span>Hướng dẫn</span>
+    </button>
+  </div>
+
+  <div id="pane-calc">
+
+    <div class="card">
+      <div class="card-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9h18M3 15h18M9 3v18M15 3v18" stroke-width="1.5"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+        Chọn siêu thị &amp; nhập doanh thu
+      </div>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Mã / Tên siêu thị</label>
+          <div style="position:relative" class="search-input-wrapper">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="shop-search" placeholder="Gõ mã hoặc tên siêu thị để tìm kiếm..." oninput="onShopSearch(this.value)" onfocus="showShopDropdown()" onblur="setTimeout(hideShopDropdown,200)" autocomplete="off">
+            <div id="shop-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid var(--green-700);border-top:none;border-radius:0 0 8px 8px;max-height:260px;overflow-y:auto;z-index:200;box-shadow:0 4px 16px rgba(0,0,0,0.12)"></div>
+          </div>
+          <input type="hidden" id="sel-shop">
+        </div>
+
+        <div class="form-group">
+          <label>Tháng tính lương</label>
+          <div style="display:flex;gap:6px">
+            <select id="inp-month-m" style="flex:1" onchange="calculate()">
+              <option value="1">Tháng 1</option>
+              <option value="2">Tháng 2</option>
+              <option value="3">Tháng 3</option>
+              <option value="4">Tháng 4</option>
+              <option value="5">Tháng 5</option>
+              <option value="6">Tháng 6</option>
+              <option value="7">Tháng 7</option>
+              <option value="8">Tháng 8</option>
+              <option value="9">Tháng 9</option>
+              <option value="10">Tháng 10</option>
+              <option value="11">Tháng 11</option>
+              <option value="12">Tháng 12</option>
+            </select>
+            <select id="inp-month-y" style="flex:1" onchange="calculate()"></select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Giờ công đi ca</label>
+          <input type="number" id="inp-hours" value="208" min="0" max="300" oninput="calculate()">
+        </div>
+
+        <div class="form-group full">
+          <label>Doanh thu thực tế tháng này (VNĐ)</label>
+          <div class="money-wrap">
+            <input type="text" id="inp-dt-actual" placeholder="VD: 1,200,000,000"
+              oninput="onMoneyInput(this,'lbl-dt')" onblur="onMoneyBlur(this)">
+            <span class="money-hint" id="lbl-dt"></span>
+          </div>
+        </div>
+        
+        <div class="form-group full">
+          <label>Lợi nhuận tháng này (VNĐ) — không bắt buộc</label>
+          <div class="money-wrap">
+            <input type="text" id="inp-ln-actual" placeholder="VD: 57,000,000"
+              oninput="onMoneyInput(this,'lbl-ln')" onblur="onMoneyBlur(this)">
+            <span class="money-hint" id="lbl-ln"></span>
+          </div>
+        </div>
+
+        <div class="form-group full">
+          <label>Mức lợi nhuận MIN theo vùng</label>
+          <select id="sel-ln-min" onchange="calculate()">
+            <option value="0.07">7% (mặc định)</option>
+            <option value="0.06">6%</option>
+            <option value="0.08">8%</option>
+            <option value="0.09">9%</option>
+            <option value="0.10">10%</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="base-info-card" style="display:none">
+      <div class="card-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Thông tin base siêu thị
+      </div>
+      <div class="base-info-grid" id="base-detail"></div>
+    </div>
+
+    <div id="result-section" style="display:none">
+      <div class="result-box">
+        <div class="result-label">Tổng thu nhập dự kiến</div>
+        <div class="result-total" id="res-total">0 ₫</div>
+        <div id="res-badge"></div>
+        <div class="result-grid">
+          <div class="result-card">
+            <div class="result-card-lbl">Lương cứng</div>
+            <div class="result-card-val" id="res-luong">6,000,000 ₫</div>
+          </div>
+          <div class="result-card">
+            <div class="result-card-lbl">Thưởng tăng trưởng DT</div>
+            <div class="result-card-val" id="res-thuong-dt">0 ₫</div>
+          </div>
+          <div class="result-card">
+            <div class="result-card-lbl">Thưởng thêm LN</div>
+            <div class="result-card-val" id="res-thuong-ln">—</div>
+          </div>
+        </div>
+        <div class="breakdown">
+          <div class="breakdown-title">Chi tiết tính toán</div>
+          <div id="res-breakdown"></div>
+        </div>
+      </div>
+      <div id="res-notice" style="display:none"></div>
+    </div>
+
+    <div id="no-shop-notice" style="display:none" class="notice notice-amber" style="margin-top:8px">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Chưa có dữ liệu base cho siêu thị này. Vui lòng liên hệ quản trị viên để cập nhật.
+    </div>
+
+  </div>
+
+  <div id="pane-base" style="display:none">
+
+    <div class="card" id="lock-card">
+      <div class="lock-screen">
+        <div class="lock-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <div class="lock-title">Khu vực quản trị viên</div>
+        <div class="lock-sub">Nhập mật khẩu để truy cập dữ liệu base doanh thu</div>
+        <input type="password" id="pw-input" placeholder="Mật khẩu"
+          onkeydown="if(event.key==='Enter')checkPw()">
+        <button class="btn-primary" onclick="checkPw()">Đăng nhập</button>
+        <div class="lock-err" id="pw-err"></div>
+      </div>
+    </div>
+
+    <div id="base-content" style="display:none">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px">
+        <div id="cloud-status" style="font-size:13px; font-weight:500;"></div>
+        <button class="btn-ghost" onclick="lockBase()">🔒 Khóa lại</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          Thêm / cập nhật siêu thị
+        </div>
+        <div class="notice notice-gray" style="margin-bottom:14px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Base = DT trung bình tháng 10–12 (shop cũ) hoặc DT thực tế sau khai trương (shop mới).
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Mã siêu thị</label>
+            <input type="text" id="add-id" placeholder="VD: BHX001">
+          </div>
+          <div class="form-group">
+            <label>Tên siêu thị (tùy chọn)</label>
+            <input type="text" id="add-name" placeholder="VD: BHX Nguyễn Trãi">
+          </div>
+          <div class="form-group full">
+            <label>Doanh thu base (VNĐ)</label>
+            <div class="money-wrap">
+              <input type="text" id="add-base" placeholder="VD: 1,000,000,000"
+                oninput="onMoneyInput(this,'lbl-add-base')" onblur="onMoneyBlur(this)">
+              <span class="money-hint" id="lbl-add-base"></span>
+            </div>
+          </div>
+          <div class="form-group full">
+            <label>Lợi nhuận quá khứ TB (VNĐ, tùy chọn)</label>
+            <div class="money-wrap">
+              <input type="text" id="add-ln" placeholder="VD: 50,000,000"
+                oninput="onMoneyInput(this,'lbl-add-ln')" onblur="onMoneyBlur(this)">
+              <span class="money-hint" id="lbl-add-ln"></span>
+            </div>
+          </div>
+        </div>
+        <button class="btn-primary" style="margin-top:12px" onclick="addShop()">Lưu siêu thị</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+          Import từ Excel
+        </div>
+        <div class="upload-area" onclick="document.getElementById('excel-file').click()">
+          <div class="upload-area-icon">📗</div>
+          <p><strong>Nhấp để chọn file Excel (.xlsx / .xls)</strong></p>
+          <p style="margin-top:4px;font-size:12px">Cột: ma_sieu_thi, ten_sieu_thi, doanh_thu_base, loi_nhuan_qk</p>
+        </div>
+        <input type="file" id="excel-file" accept=".xlsx,.xls" style="display:none" onchange="importExcel(event)">
+        <button class="btn-outline" onclick="downloadTemplate()" style="margin-top:10px;width:100%">
+          ⬇ Tải file mẫu Excel
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="justify-content:space-between">
+          <span style="display:flex;align-items:center;gap:8px">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            Danh sách siêu thị (<span id="shop-count">0</span>)
+          </span>
+          <button class="btn-ghost" onclick="clearAll()">Xóa tất cả</button>
+        </div>
+        <div class="tbl-wrap" id="shop-table-wrap">
+          <p style="font-size:13px;color:#6b7280;text-align:center;padding:1.5rem 0">Chưa có dữ liệu. Thêm siêu thị hoặc import CSV.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="pane-guide" style="display:none">
+    <div class="card">
+      <div class="card-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>
+        Công thức tính thu nhập
+      </div>
+      <div style="font-size:14px;font-weight:600;color:#374151;margin-bottom:6px">Tổng thu nhập</div>
+      <div class="formula">= Lương cứng + Thưởng tăng trưởng DT ± Thưởng LN</div>
+
+      <div style="margin-top:1.25rem">
+        <div style="font-size:13px;font-weight:600;color:#374151;margin-bottom:4px">① Lương cứng</div>
+        <div class="formula">6,000,000 VNĐ / tháng (khi đủ ≥ 208 giờ công)</div>
+      </div>
+
+      <div style="margin-top:1.25rem">
+        <div style="font-size:13px;font-weight:600;color:#374151;margin-bottom:4px">② Thưởng tăng trưởng doanh thu</div>
+        <div class="formula">(DT thực tế − 80% × Base) ^ 0.6 × 48</div>
+        <div class="notice notice-gray" style="margin-top:8px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Chỉ áp dụng khi DT thực tế &gt; 80% base. DT thực tế không tính đơn hàng bán số lượng lớn.
+        </div>
+      </div>
+
+      <div style="margin-top:1.25rem">
+        <div style="font-size:13px;font-weight:600;color:#374151;margin-bottom:4px">③ Thưởng thêm khi cải thiện lợi nhuận (+30%)</div>
+        <div class="formula">Điều kiện: LN tháng này &gt; LN quá khứ TB VÀ &gt; LN kỳ vọng&#10;→ Cộng thêm 30% × Thưởng tăng trưởng DT&#10;&#10;LN kỳ vọng = (DT thực tế − DT TB quá khứ) × Mức lợi MIN vùng</div>
+        <div class="notice notice-amber" style="margin-top:8px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Nếu LN tháng này &lt; LN TB quá khứ → giảm 30% thưởng tăng trưởng DT.
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Quy định giờ công
+      </div>
+      <div class="guide-rule"><span>Giờ đủ lương cứng</span><span>≥ 208 giờ / tháng</span></div>
+      <div class="guide-rule"><span>Giờ tối thiểu đi ca</span><span>160 giờ / tháng</span></div>
+      <div class="guide-rule"><span>Giờ công dưới 160h</span><span>Không có lương cứng</span></div>
+      <div class="notice notice-gray" style="margin-top:10px">
+        Thưởng vượt trội, thưởng hiệu quả Fresh, thưởng khai trương... vẫn dựa trên giờ công nhưng không tính trong công cụ này.
+      </div>
+    </div>
+  </div>
+
+</div><script>
+const PW = '24122004';
+let unlocked = false;
+let shops = {};
+
+// ==========================================
+// DÁN URL GOOGLE APPS SCRIPT CỦA BẠN VÀO ĐÂY
+// ==========================================
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbw9X4LWNwq-4KJ3QA8gPu9-qbpYqzcFVMFsV52zeNA2rwWwTY3j0gzYT80vWwASRCQ4Gg/exec'; 
+
+try {
+  const s = localStorage.getItem('bhx_shops_v2'); 
+  if(s) shops = JSON.parse(s);
+} catch(e) {}
+
+// Gọi tải dữ liệu tự động khi mở trang (nếu đã config GAS_URL hợp lệ)
+if(GAS_URL && !GAS_URL.includes('XXXXX')) { fetchFromCloud(true); }
+
+/* ── Helpers ── */
+function parseM(str) {
+  return parseFloat((str||'').replace(/,/g,'').replace(/[^0-9.]/g,'')) || 0;
+}
+function commas(n) {
+  if(!n && n !== 0) return '';
+  return Math.round(n).toLocaleString('en-US');
+}
+function vnd(n) { return commas(Math.round(n)) + ' ₫'; }
+function short(n) {
+  if(!n) return '';
+  if(n >= 1e9) return (n/1e9).toFixed(2).replace(/\.?0+$/,'') + ' tỷ';
+  if(n >= 1e6) return (n/1e6).toFixed(1).replace(/\.?0+$/,'') + ' triệu';
+  return commas(n);
+}
+function icon(name) {
+  const icons = {
+    check: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>`,
+    warn:  `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`
+  };
+  return icons[name] || '';
+}
+
+/* ── Init month dropdowns (Tự động lấy năm hiện tại) ── */
+(function initMonthDropdowns() {
+  const now = new Date();
+  const curYear = now.getFullYear();
+  const curMonth = now.getMonth() + 1;
+  const selY = document.getElementById('inp-month-y');
+  for(let y = curYear - 1; y <= curYear + 2; y++) {
+    const o = document.createElement('option');
+    o.value = y; o.textContent = 'Năm ' + y;
+    if(y === curYear) o.selected = true;
+    selY.appendChild(o);
+  }
+  document.getElementById('inp-month-m').value = curMonth;
+})();
+
+/* ── Money inputs ── */
+function onMoneyInput(el, lblId) {
+  const raw = el.value.replace(/[^0-9]/g,'');
+  const num = parseFloat(raw) || 0;
+  el.value = num > 0 ? commas(num) : raw;
+  const lbl = document.getElementById(lblId);
+  if(lbl) lbl.textContent = num > 0 ? '≈ ' + short(num) : '';
+  calculate();
+}
+function onMoneyBlur(el) {
+  const raw = el.value.replace(/[^0-9]/g,'');
+  const num = parseFloat(raw) || 0;
+  el.value = num > 0 ? commas(num) : '';
+}
+
+/* ── Tabs ── */
+function switchTab(t) {
+  ['calc','base','guide'].forEach(x => {
+    document.getElementById('pane-'+x).style.display = x===t ? '' : 'none';
+    document.getElementById('tab-'+x).classList.toggle('active', x===t);
+  });
+  if(t === 'base') {
+    if(!unlocked) {
+      document.getElementById('lock-card').style.display = '';
+      document.getElementById('base-content').style.display = 'none';
+    }
+    renderTable();
+  }
+}
+
+/* ── Auth ── */
+function checkPw() {
+  const v = document.getElementById('pw-input').value;
+  if(v === PW) {
+    unlocked = true;
+    document.getElementById('lock-card').style.display = 'none';
+    document.getElementById('base-content').style.display = '';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-err').textContent = '';
+    renderTable();
+  } else {
+    document.getElementById('pw-err').textContent = 'Mật khẩu không đúng. Vui lòng thử lại.';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+  }
+}
+function lockBase() {
+  unlocked = false;
+  document.getElementById('lock-card').style.display = '';
+  document.getElementById('base-content').style.display = 'none';
+}
+
+/* ── Shop select ── */
+let shopList = [];
+function populateSelect() {
+  const cur = document.getElementById('sel-shop').value;
+  shopList = Object.keys(shops).sort().map(id => ({
+    id, label: shops[id].name ? id + ' — ' + shops[id].name : id
+  }));
+  if(cur) {
+    const found = shopList.find(s => s.id === cur);
+    const el = document.getElementById('shop-search');
+    if(found && el && !el.value) el.value = found.label;
+  }
+}
+function onShopSearch(q) {
+  const dd = document.getElementById('shop-dropdown');
+  q = (q||'').trim().toLowerCase();
+  const res = q ? shopList.filter(s => s.id.toLowerCase().includes(q) || s.label.toLowerCase().includes(q)).slice(0,60) : shopList.slice(0,60);
+  renderShopDD(res);
+  dd.style.display = res.length ? '' : 'none';
+  if(!q) { document.getElementById('sel-shop').value = ''; onShopChange(); }
+}
+function renderShopDD(items) {
+  document.getElementById('shop-dropdown').innerHTML = items.map(s => {
+    const lbl = s.label.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+    return `<div onclick="selectShop('${s.id}')" style="padding:9px 12px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--gray-100)" onmouseover="this.style.background='var(--green-50)'" onmouseout="this.style.background=''">${lbl}</div>`;
+  }).join('');
+}
+function selectShop(id) {
+  const found = shopList.find(s => s.id === id);
+  document.getElementById('sel-shop').value = id;
+  document.getElementById('shop-search').value = found ? found.label : id;
+  document.getElementById('shop-dropdown').style.display = 'none';
+  onShopChange();
+}
+function showShopDropdown() {
+  const q = (document.getElementById('shop-search').value||'').trim().toLowerCase();
+  const res = q ? shopList.filter(s => s.id.toLowerCase().includes(q)||s.label.toLowerCase().includes(q)).slice(0,60) : shopList.slice(0,60);
+  if(res.length) { renderShopDD(res); document.getElementById('shop-dropdown').style.display=''; }
+}
+function hideShopDropdown() {
+  const dd = document.getElementById('shop-dropdown'); if(dd) dd.style.display='none';
+}
+function save() {
+  try { localStorage.setItem('bhx_shops_v2', JSON.stringify(shops)); } catch(e) {}
+  // Nếu có link cấu hình Cloud thì đẩy ngầm tự động
+  if(GAS_URL && !GAS_URL.includes('XXXXX')) pushToCloud(true);
+  populateSelect();
+  renderTable();
+}
+
+/* ── Google Sheets Cloud helpers ── */
+function setCloudStatus(msg, color) {
+  const el = document.getElementById('cloud-status');
+  if(!el) return;
+  el.textContent = msg;
+  el.style.color = color === 'green' ? 'var(--green-700)' : color === 'red' ? 'var(--red-txt)' : 'var(--gray-500)';
+}
+
+async function fetchFromCloud(silent) {
+  if(!GAS_URL || GAS_URL.includes('XXXXX')) return;
+  if(!silent) setCloudStatus('⏳ Đang tải dữ liệu từ Google Sheets...', 'gray');
+  try {
+    const res = await fetch(GAS_URL);
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const parsed = await res.json();
+    if(parsed && typeof parsed === 'object') {
+      shops = parsed;
+      try { localStorage.setItem('bhx_shops_v2', JSON.stringify(shops)); } catch(e) {}
+      populateSelect(); 
+      renderTable();
+      if(!silent) setCloudStatus(`✅ Đã đồng bộ ${Object.keys(shops).length} siêu thị từ Cloud.`, 'green');
+    }
+  } catch(err) {
+    if(!silent) setCloudStatus('❌ Lỗi tải dữ liệu: ' + err.message, 'red');
+  }
+}
+
+async function pushToCloud(silent) {
+  if(!GAS_URL || GAS_URL.includes('XXXXX')) { 
+    if(!silent) setCloudStatus('❌ Chưa cấu hình Google Sheets URL.', 'red'); 
+    return; 
+  }
+  if(!silent) setCloudStatus('⏳ Đang lưu lên Google Sheets...', 'gray');
+  try {
+    const pr = await fetch(GAS_URL, {
+      method: 'POST',
+      mode: 'cors',
+      body: JSON.stringify(shops)
+    });
+    if(!pr.ok) throw new Error('HTTP ' + pr.status);
+    const resJson = await pr.json();
+    if(resJson.status === 'success') {
+      if(!silent) setCloudStatus(`✅ Đã lưu dữ liệu lên Cloud.`, 'green');
+    } else {
+      throw new Error(resJson.message || 'Lỗi không xác định');
+    }
+  } catch(err) {
+    if(!silent) setCloudStatus('❌ Lỗi lưu dữ liệu: ' + err.message, 'red');
+  }
+}
+
+function onShopChange() {
+  const id = document.getElementById('sel-shop').value;
+  const baseCard = document.getElementById('base-info-card');
+  const noNotice = document.getElementById('no-shop-notice');
+  const resSec = document.getElementById('result-section');
+  noNotice.style.display = 'none';
+  if(!id) { baseCard.style.display='none'; resSec.style.display='none'; return; }
+  if(!shops[id]) { baseCard.style.display='none'; noNotice.style.display='flex'; resSec.style.display='none'; return; }
+  const sh = shops[id];
+  baseCard.style.display = '';
+  document.getElementById('base-detail').innerHTML = `
+    <div class="base-info-item"><div class="base-info-lbl">Base doanh thu</div><div class="base-info-val">${commas(sh.base)} ₫</div></div>
+    <div class="base-info-item"><div class="base-info-lbl">80% base (ngưỡng thưởng)</div><div class="base-info-val accent">${commas(Math.round(sh.base*0.8))} ₫</div></div>
+    ${sh.ln_past ? `<div class="base-info-item"><div class="base-info-lbl">LN quá khứ TB</div><div class="base-info-val">${commas(sh.ln_past)} ₫</div></div>` : `<div class="base-info-item"><div class="base-info-lbl">LN quá khứ TB</div><div class="base-info-val" style="color:var(--gray-500);font-size:12px">Chưa có dữ liệu</div></div>`}
+  `;
+  calculate();
+}
+
+/* ── Main calc ── */
+function calculate() {
+  const id = document.getElementById('sel-shop').value;
+  const dtActual = parseM(document.getElementById('inp-dt-actual').value);
+  const lnRaw = document.getElementById('inp-ln-actual').value;
+  const lnActual = parseM(lnRaw);
+  const hasLN = lnRaw.replace(/[^0-9]/g,'').length > 0 && lnActual > 0;
+  const lnRate = parseFloat(document.getElementById('sel-ln-min').value);
+  const hours = parseFloat(document.getElementById('inp-hours').value) || 0;
+
+  if(!id || !shops[id] || dtActual <= 0) { document.getElementById('result-section').style.display='none'; return; }
+
+  const sh = shops[id];
+  const base80 = sh.base * 0.8;
+
+  // Lương cứng
+  let luong = 6000000;
+  if(hours < 160) luong = 0;
+  else if(hours < 208) luong = Math.round(6000000 * hours / 208);
+
+  // Thưởng DT
+  let thuongBase = 0;
+  if(dtActual > base80) thuongBase = Math.pow(dtActual - base80, 0.6) * 48;
+  let thuong = thuongBase;
+  let thuongLN = 0, lnAdj = 0;
+  const lnPast = sh.ln_past || 0;
+
+  // Chỉ áp dụng logic LN khi có dữ liệu lợi nhuận quá khứ (ln_past > 0)
+  if(hasLN && thuongBase > 0 && lnPast > 0) {
+    const lnKV = lnPast + (dtActual - sh.base) * lnRate;
+    if(lnActual < lnPast) { lnAdj = -0.3 * thuongBase; thuong = thuongBase + lnAdj; }
+    else if(lnActual > lnKV) { thuongLN = 0.3 * thuongBase; }
+  }
+
+  const total = luong + thuong + thuongLN;
+
+  document.getElementById('result-section').style.display = '';
+  document.getElementById('res-total').textContent = vnd(total);
+  document.getElementById('res-luong').textContent = vnd(luong);
+  document.getElementById('res-thuong-dt').textContent = vnd(thuong);
+  document.getElementById('res-thuong-ln').textContent = thuongLN > 0 ? vnd(thuongLN) : '—';
+
+  let badge = '';
+  if(total >= 18e6) badge = `<span class="badge badge-green">${icon('check')} Thu nhập cao (≥ 18 triệu)</span>`;
+  else if(total >= 12e6) badge = `<span class="badge badge-green">${icon('check')} Thu nhập tốt</span>`;
+  else if(total >= 8e6) badge = `<span class="badge badge-amber">${icon('warn')} Thu nhập trung bình</span>`;
+  else badge = `<span class="badge badge-red">${icon('warn')} Dưới kỳ vọng</span>`;
+  document.getElementById('res-badge').innerHTML = badge;
+
+  let bd = `
+    <div class="brow"><span class="brow-lbl">Lương cứng${hours>=208?' (đủ giờ)':hours>=160?' ('+hours+'h)':' (dưới 160h)'}</span><span class="brow-val">${vnd(luong)}</span></div>
+    <div class="brow"><span class="brow-lbl">Base DT siêu thị</span><span class="brow-val">${commas(sh.base)} ₫</span></div>
+    <div class="brow"><span class="brow-lbl">80% base (ngưỡng tối thiểu)</span><span class="brow-val">${commas(base80)} ₫</span></div>
+    <div class="brow"><span class="brow-lbl">DT thực tế tháng này</span><span class="brow-val">${commas(dtActual)} ₫</span></div>
+    <div class="brow"><span class="brow-lbl">DT − 80% base</span><span class="brow-val ${dtActual>base80?'green':'red'}">${dtActual>base80?'+':''}${commas(dtActual-base80)} ₫</span></div>
+    <div class="brow"><span class="brow-lbl">Thưởng tăng trưởng DT (^0.6 × 48)</span><span class="brow-val green">+${vnd(thuong)}</span></div>
+    <div class="brow"><span class="brow-lbl">Tổng thu nhập</span><span class="brow-val"><strong>${vnd(total)}</strong></span></div>`;
+  document.getElementById('res-breakdown').innerHTML = bd;
+
+  const noticeEl = document.getElementById('res-notice');
+  if(dtActual <= base80) {
+    noticeEl.style.display = '';
+    noticeEl.className = 'notice notice-amber';
+    noticeEl.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>DT thực tế (${commas(dtActual)} ₫) chưa đạt 80% base (${commas(base80)} ₫) — không có thưởng tăng trưởng DT.`;
+  } else if(lnAdj < 0 && lnPast > 0) {
+    noticeEl.style.display = '';
+    noticeEl.className = 'notice notice-amber';
+    noticeEl.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>LN tháng này thấp hơn LN TB quá khứ — thưởng tăng trưởng DT bị giảm 30%.`;
+  } else {
+    noticeEl.style.display = 'none';
+  }
+}
+
+/* ── Shop CRUD ── */
+function addShop() {
+  const id = document.getElementById('add-id').value.trim().toUpperCase();
+  const name = document.getElementById('add-name').value.trim();
+  const base = parseM(document.getElementById('add-base').value);
+  const ln = parseM(document.getElementById('add-ln').value);
+  if(!id || base <= 0) { alert('Vui lòng nhập mã siêu thị và doanh thu base hợp lệ.'); return; }
+  shops[id] = { name, base, ln_past: ln };
+  save();
+  ['add-id','add-name','add-base','add-ln'].forEach(x => document.getElementById(x).value='');
+  ['lbl-add-base','lbl-add-ln'].forEach(x => { const e=document.getElementById(x); if(e) e.textContent=''; });
+  alert(`✅ Đã lưu siêu thị ${id}`);
+}
+
+function renderTable() {
+  const ids = Object.keys(shops).sort();
+  const cnt = document.getElementById('shop-count');
+  if(cnt) cnt.textContent = ids.length;
+  const wrap = document.getElementById('shop-table-wrap');
+  if(!wrap) return;
+  if(ids.length === 0) {
+    wrap.innerHTML = '<p style="font-size:13px;color:#6b7280;text-align:center;padding:1.5rem 0">Chưa có dữ liệu.</p>';
+    return;
+  }
+  let h = `<table><thead><tr><th>Mã ST</th><th>Tên</th><th>Base DT</th><th>80% Base</th><th>LN QK</th><th></th></tr></thead><tbody>`;
+  ids.forEach(id => {
+    const s = shops[id];
+    h += `<tr>
+      <td><strong>${id}</strong></td>
+      <td>${s.name||'—'}</td>
+      <td>${commas(s.base)} ₫</td>
+      <td style="color:var(--green-800);font-weight:500">${commas(Math.round(s.base*0.8))} ₫</td>
+      <td>${s.ln_past ? commas(s.ln_past)+' ₫' : '—'}</td>
+      <td><button class="btn-ghost" onclick="deleteShop('${id}')">🗑</button></td>
+    </tr>`;
+  });
+  h += '</tbody></table>';
+  wrap.innerHTML = h;
+}
+
+function deleteShop(id) {
+  if(!confirm(`Xóa siêu thị ${id}?`)) return;
+  delete shops[id]; save();
+}
+function clearAll() {
+  if(!confirm('Xóa toàn bộ dữ liệu siêu thị?')) return;
+  shops = {}; save();
+}
+
+/* ── Excel Import / Export ── */
+function importExcel(e) {
+  const f = e.target.files[0]; if(!f) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const wb = XLSX.read(ev.target.result, { type: 'binary' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+      let count = 0;
+      rows.forEach(row => {
+        const id = (row['ma_sieu_thi'] || row['Mã siêu thị'] || row['MA_SIEU_THI'] || '').toString().trim().toUpperCase();
+        const name = (row['ten_sieu_thi'] || row['Tên siêu thị'] || row['TEN_SIEU_THI'] || '').toString().trim();
+        const baseRaw = row['doanh_thu_base'] || row['Doanh thu base'] || row['DOANH_THU_BASE'] || 0;
+        const lnRaw = row['loi_nhuan_qk'] || row['Lợi nhuận QK'] || row['LOI_NHUAN_QK'] || 0;
+        const base = parseFloat((baseRaw).toString().replace(/[^0-9.]/g,''));
+        const ln = parseFloat((lnRaw).toString().replace(/[^0-9.]/g,''));
+        if(id && !isNaN(base) && base > 0) {
+          shops[id] = { name, base, ln_past: isNaN(ln) ? 0 : ln };
+          count++;
+        }
+      });
+      save();
+      alert(`✅ Đã import ${count} siêu thị từ Excel.`);
+      e.target.value = '';
+    } catch(err) {
+      alert('❌ Lỗi đọc file Excel. Vui lòng kiểm tra lại định dạng file.');
+      console.error(err);
+    }
+  };
+  reader.readAsBinaryString(f);
+}
+
+function downloadTemplate() {
+  const data = [
+    { ma_sieu_thi: 'BHX001', ten_sieu_thi: 'BHX Nguyễn Trãi',    doanh_thu_base: 1000000000, loi_nhuan_qk: 50000000  },
+    { ma_sieu_thi: 'BHX002', ten_sieu_thi: 'BHX Lê Văn Sỹ',       doanh_thu_base: 2500000000, loi_nhuan_qk: 120000000 },
+    { ma_sieu_thi: 'BHX003', ten_sieu_thi: 'BHX Phan Xích Long',   doanh_thu_base: 800000000,  loi_nhuan_qk: 0         },
+  ];
+  const ws = XLSX.utils.json_to_sheet(data);
+  ws['!cols'] = [{ wch: 14 }, { wch: 24 }, { wch: 20 }, { wch: 18 }];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Danh sách siêu thị');
+  XLSX.writeFile(wb, 'mau_base_doanh_thu.xlsx');
+}
+
+/* ── Init ── */
+populateSelect();
+</script>
+</body>
+</html>
